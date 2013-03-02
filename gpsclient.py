@@ -1,9 +1,24 @@
-import gps, json, ConfigParser
+import gps, json, ConfigParser, threading
 from ws4py.client.threadedclient import WebSocketClient
 
 class BGTSocket(WebSocketClient):
+	def opened(self):
+		print "connected"
+		self.resetTimeout()
+	def resetTimeout(self):
+		def timeout():
+			print "timeout!"
+		if hasattr(self, 'timeout'):
+			self.timeout.cancel()
+		self.timeout = threading.Timer(30, timeout)
+		self.timeout.start()
 	def received_message(self, message):
 		print message
+	def process(self, bytes):
+		# process means we received something. since the server will send a ping after at most 20 seconds
+		# we can use this as an indicator, that the connection is still alive.
+		self.resetTimeout()
+		return super(BGTSocket, self).process(bytes)
 
 if __name__ == '__main__':
 	config = ConfigParser.ConfigParser();
