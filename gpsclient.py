@@ -16,4 +16,4 @@ if __name__ == '__main__':
 		if not 'lat' in data or not 'lon' in data or not 'speed' in data: continue
 		print "lat: %f, lon: %f, speed: %f" % (data.lat, data.lon, data.speed);
 
-		socket.send(json.dumps({'command':'log','data':{'lat':data.lat,'lon':data.lon,'eventId':2}}))
+		socket.send(json.dumps({'command':'log','data':{'lat':data.lat,'lon':data.lon,'speed':data.speed,'eventId':3}}))
