@@ -1,4 +1,4 @@
-import gps, json
+import gps, json, ConfigParser
 from ws4py.client.threadedclient import WebSocketClient
 
 class BGTSocket(WebSocketClient):
@@ -6,10 +6,13 @@ class BGTSocket(WebSocketClient):
 		print message
 
 if __name__ == '__main__':
+	config = ConfigParser.ConfigParser();
+	config.read('config.ini');
+
 	session = gps.gps()
 	session.stream(flags=gps.WATCH_JSON)
 
-	socket = BGTSocket('wss://ec2-79-125-69-76.eu-west-1.compute.amazonaws.com/bgt/socket');
+	socket = BGTSocket('wss://' + config.get('server', 'host') + '/bgt/socket');
 	socket.connect();
 
 	for data in session:
