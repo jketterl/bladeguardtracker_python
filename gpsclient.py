@@ -13,6 +13,7 @@ class BGTSocket(WebSocketClient):
 		self.timeout = threading.Timer(30, timeout)
 		self.timeout.start()
 	def received_message(self, message):
+		message = json.loads(str(message))
 		print message
 	def process(self, bytes):
 		# process means we received something. since the server will send a ping after at most 20 seconds
