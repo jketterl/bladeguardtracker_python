@@ -1,4 +1,5 @@
 import json, gps, threading
+from .command import Command
 
 class GPSService(object):
 	def __init__(self, socket, eventId):
@@ -7,7 +8,7 @@ class GPSService(object):
 		self.gpsOn = False
 		self.eventId = eventId
 
-		socket.send(json.dumps({'command':'subscribeUpdates','data':{'eventId':self.eventId,'category':['stats']}}))
+		socket.send(Command('subscribeUpdates', {'eventId':self.eventId,'category':['stats']}))
 	def start(self):
 		session = gps.gps()
 		session.stream(flags=gps.WATCH_JSON)
@@ -25,7 +26,7 @@ class GPSService(object):
 
 			self.gpsOn = True
 			#print "lat: %f, lon: %f, speed: %f" % (data.lat, data.lon, data.speed);
-			self.socket.send(json.dumps({'command':'log','data':{'lat':data.lat,'lon':data.lon,'speed':data.speed,'eventId':self.eventId}}))
+			self.socket.send(Command('log', {'lat':data.lat,'lon':data.lon,'speed':data.speed,'eventId':self.eventId}))
 
 			self.resetSignalTimeout()
 	def resetGPSTimeout(self):
@@ -45,5 +46,4 @@ class GPSService(object):
 	def sendGPSUnavailable(self):
 		if not self.gpsOn: return
 		self.gpsOn = False
-		self.socket.send(json.dumps({'command':'gpsUnavailable','data':{'eventId':self.eventId}}))
-
+		self.socket.send(Command('gpsUnavailable', {'eventId':self.eventId}))
