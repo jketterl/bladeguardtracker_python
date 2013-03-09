@@ -1,5 +1,6 @@
 from ws4py.client.threadedclient import WebSocketClient
 import json, threading
+from .command import Command
 
 class Socket(object):
 	def __init__(self, url):
@@ -31,6 +32,7 @@ class Client(WebSocketClient):
 		for command in self.queue:
 			self.send(command)
 		self.queue = []
+		self.send(Command('subscribeUpdates', {'eventId':3, 'category':['stats']}).getJson())
 	def closed(self, code, reason = None):
 		print "connection closed"
 		print reason

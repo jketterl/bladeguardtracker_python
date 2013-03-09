@@ -7,8 +7,6 @@ class GPSService(object):
 		self.locked = False
 		self.gpsOn = False
 		self.eventId = eventId
-
-		socket.send(Command('subscribeUpdates', {'eventId':self.eventId,'category':['stats']}))
 	def start(self):
 		session = gps.gps()
 		session.stream(flags=gps.WATCH_JSON)
