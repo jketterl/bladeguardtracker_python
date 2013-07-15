@@ -6,9 +6,11 @@ if __name__ == '__main__':
 	config = ConfigParser.ConfigParser();
 	config.read('config.ini');
 
-	socket = Socket('wss://' + config.get('server', 'host') + '/bgt/socket');
+	eventId = config.get('event', 'id')
 
-	service = GPSService(socket, 26)
+	socket = Socket('wss://' + config.get('server', 'host') + '/bgt/socket', eventId);
+
+	service = GPSService(socket, eventId)
 	try:
 		service.start()
 	except KeyboardInterrupt:

@@ -3,14 +3,16 @@ import json, threading
 from .command import Command
 
 class Socket(object):
-	def __init__(self, url):
+	def __init__(self, url, eventId):
 		self.client = None
 		self.url = url
+		self.eventId = eventId
 	def send(self, command):
 		self.getClient().send(command.getJson())
 	def getClient(self):
 		if self.client is None:
 			self.client = Client(self.url, self)
+			self.send(Command('subscribeUpdates', {'eventId':26, 'category':['stats']}))
 		return self.client
 	def close(self):
 		if self.client is None: return
@@ -36,7 +38,7 @@ class Client(WebSocketClient):
 		for command in self.queue:
 			self.send(command)
 		self.queue = []
-		self.send(Command('subscribeUpdates', {'eventId':26, 'category':['stats']}).getJson())
+		#self.send(Command('subscribeUpdates', {'eventId':26, 'category':['stats']}).getJson())
 	def closed(self, code, reason = None):
 		print "connection closed"
 		print reason
