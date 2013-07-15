@@ -27,18 +27,25 @@ class GPSService(object):
 			self.socket.send(Command('log', {'lat':data.lat,'lon':data.lon,'speed':data.speed,'eventId':self.eventId}))
 
 			self.resetSignalTimeout()
+	def stop(self):
+		self.cancelGPSTimeout()
+		self.cancelSignalTimeout()
+	def cancelGPSTimeout(self):
+		if (hasattr(self, 'gpstimeout')):
+			self.gpstimeout.cancel();
 	def resetGPSTimeout(self):
 		def timeout():
 			self.locked = False
-		if (hasattr(self, 'gpstimeout')):
-			self.gpstimeout.cancel();
+		self.cancelGPSTimeout()
 		self.gpstimeout = threading.Timer(5, timeout)
 		self.gpstimeout.start()
+	def cancelSignalTimeout(self):
+		if (hasattr(self, 'signaltimeout')):
+			self.signaltimeout.cancel();
 	def resetSignalTimeout(self):
 		def timeout():
 			self.sendGPSUnavailable()
-		if (hasattr(self, 'signaltimeout')):
-			self.signaltimeout.cancel();
+		self.cancelSignalTimeout()
 		self.signaltimeout = threading.Timer(60, timeout)
 		self.signaltimeout.start()
 	def sendGPSUnavailable(self):

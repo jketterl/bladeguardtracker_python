@@ -8,5 +8,9 @@ if __name__ == '__main__':
 
 	socket = Socket('wss://' + config.get('server', 'host') + '/bgt/socket');
 
-	service = GPSService(socket, 3)
-	service.start()
+	service = GPSService(socket, 26)
+	try:
+		service.start()
+	except KeyboardInterrupt:
+		service.stop()
+		socket.close()

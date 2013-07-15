@@ -12,6 +12,9 @@ class Socket(object):
 		if self.client is None:
 			self.client = Client(self.url, self)
 		return self.client
+	def close(self):
+		if self.client is None: return
+		self.client.close()
 	def onClose(self, client):
 		if client is not self.client: return
 		self.client = None
@@ -29,10 +32,11 @@ class Client(WebSocketClient):
 		self.speed = None
 		self.distance = None
 		self.open = True
+		self.send(Command('auth', {'user':'raspi01','pass':'bgtisc00l'}).getJson());
 		for command in self.queue:
 			self.send(command)
 		self.queue = []
-		self.send(Command('subscribeUpdates', {'eventId':3, 'category':['stats']}).getJson())
+		self.send(Command('subscribeUpdates', {'eventId':26, 'category':['stats']}).getJson())
 	def closed(self, code, reason = None):
 		print "connection closed"
 		print reason
