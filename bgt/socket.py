@@ -3,16 +3,17 @@ import json, threading
 from .command import Command
 
 class Socket(object):
-	def __init__(self, url, eventId):
+	def __init__(self, url, eventId, output):
 		self.client = None
 		self.url = url
 		self.eventId = eventId
+		self.output = output
 	def send(self, command):
 		self.getClient().send(command.getJson())
 	def getClient(self):
 		if self.client is None:
-			self.client = Client(self.url, self)
-			self.send(Command('subscribeUpdates', {'eventId':26, 'category':['stats']}))
+			self.client = Client(self.url, self, self.output)
+			self.send(Command('subscribeUpdates', {'eventId':self.eventId, 'category':['stats']}))
 		return self.client
 	def close(self):
 		if self.client is None: return
@@ -22,10 +23,11 @@ class Socket(object):
 		self.client = None
 
 class Client(WebSocketClient):
-	def __init__(self, url, socket):
+	def __init__(self, url, socket, output):
 		self.socket = socket
 		self.queue = []
 		self.open = False
+		self.output = output
 		super(Client, self).__init__(url)
 		self.connect()
 	def opened(self):
@@ -84,7 +86,7 @@ class Client(WebSocketClient):
 		return super(Client, self).process(bytes)
 	def calculateStats(self):
 		if self.distance is not None and self.speed is not None:
-			print "noch %d minuten!" % int(round(self.distance * 1000 / self.speed / 60))
+			self.output.write(int(round(self.distance * 1000 / self.speed / 60)))
 		else:
-			print "Keine Angabe moeglich"
+			self.output.write(None)
 
