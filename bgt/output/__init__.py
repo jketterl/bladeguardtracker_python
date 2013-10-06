@@ -29,7 +29,6 @@ class SPIOutput(Output):
 	def __init__(self, *args, **kwargs):
 		super(Output, self).__init__(*args, **kwargs)
 	def write(self, minutes):
-		print minutes
 		out = open('/dev/spidev0.0', 'w')
 		if minutes is None:
 			out.write('NO DATA \n')
