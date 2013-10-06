@@ -1,7 +1,9 @@
-import smbus
+import smbus, serial, time
 
 class Output(object):
 	def write(self, minutes):
+		pass
+	def reset(self):
 		pass
 
 class ConsoleOutput(Output):
@@ -10,6 +12,33 @@ class ConsoleOutput(Output):
 			print "Keine Angabe moeglich"
 		else:
 			print "noch %d minuten!" % minutes
+
+class SerialOutput(Output):
+	def __init__(self, *args, **kwargs):
+		super(Output, self).__init__(*args, **kwargs)
+		self.ser = serial.Serial('/dev/ttyACM0', 9600)
+	def write(self, minutes):
+		if minutes is None:
+			self.ser.write('NO DATA\n')
+		else:
+			self.ser.write('NOCH %d MINUTEN\n' % minutes)
+		self.ser.flush()
+		self.ser.flushInput()
+
+class SPIOutput(Output):
+	def __init__(self, *args, **kwargs):
+		super(Output, self).__init__(*args, **kwargs)
+	def write(self, minutes):
+		print minutes
+		out = open('/dev/spidev0.0', 'w')
+		if minutes is None:
+			out.write('NO DATA \n')
+		else:
+			out.write('NOCH %d MINUTEN\n' % minutes)
+		out.close()
+	def reset(self):
+		out = open('/dev/spidev0.0', 'w')
+		out.write('RESET\n')
 
 class LEDOutput(Output):
 	dash = 0b00001000
